@@ -7,11 +7,14 @@ http://ife.baidu.com
 
 # 斌斌学院
 
-	主要目标是**了解、认识、学习、掌握JavaScript**。
+　　主要目标是**了解、认识、学习、掌握JavaScript**。
 
-	一共有9个任务，如下：
+　　一共有9个任务，如下：
 
 > **任务一**：零基础JavaScript编码（一） 难度：普通
+
+  任务要求地址：https://github.com/pkjy/ife-task/tree/gh-pages/2016_spring/part2/task13
+  在线预览地址：http://pkjy.github.io/ife-task/2016_spring/part2/task13/
 
 > **任务二**：零基础JavaScript编码（二） 难度：普通
 

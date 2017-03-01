@@ -1,4 +1,4 @@
-任务四：基础JavaScript练习（一）
+任务九：JavaScript和树（三）
 ===
 **难度：** 普通
 
@@ -10,36 +10,28 @@
 
 任务目的
 ---
-* 学习与实践JavaScript的基本语法、语言特性
-* 初步了解JavaScript的事件是什么
-* 初步了解JavaScript中的DOM是什么
+* 熟练JavaScript
+* 学习树这种数据结构的基本知识
 
 任务描述
 ---
-* [如图](https://thiscandy.github.io/Baidu-ife/task-4/img/task.jpg)，模拟一个队列，队列的每个元素是一个数字，初始队列为空
-* 有一个input输入框，以及4个操作按钮
-
-    > 点击"左侧入"，将input中输入的数字从左侧插入队列中；
-
-    > 点击"右侧入"，将input中输入的数字从右侧插入队列中；
-
-    > 点击"左侧出"，读取并删除队列左侧第一个元素，并弹窗显示元素中数值；
-
-    > 点击"右侧出"，读取并删除队列又侧第一个元素，并弹窗显示元素中数值；
-
-* 点击队列中任何一个元素，则该元素会被从队列中删除
+* 基于任务九，添加节点的选择、增加与删除的功能，将二叉树变成了多叉树，并且每一个节点中带有内容
+* 点击某个节点元素，则该节点元素呈现一个特殊被选中的样式
+* 当前被遍历到的节点做一个特殊显示（比如不同的颜色）
+* 增加一个删除按钮，当选中某个节点元素后，点击删除按钮，则将该节点及其所有子节点删除掉
+* 增加一个输入框及一个“添加”按钮当选中某个节点元素后，点击增加按钮，则在该节点下增加一个子节点，节点内容为输入框中内容，插入在其子节点的最后一个位置
 
 任务注意事项
 ---
 * 实现简单功能的同时，请仔细学习JavaScript基本语法、事件、DOM相关的知识
 * 请注意代码风格的整齐、优雅
 * 代码中含有必要的注释
-* 示例图仅为参考，不需要完全一致
-* 可以不考虑输入的合法性
-* 需要考虑数字输入的合法性
 * 建议不使用任何第三方库、框架
 
 在线学习参考资料
 ---
 * [JavaScript入门篇](http://www.imooc.com/view/36)
 * [MDN JavaScript](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript)
+* [js数据结构和算法 二叉树](http://v.youku.com/v_show/id_XNTM1NTQxMDMy.html)
+* [Data Structures With JavaScript: Tree](http://code.tutsplus.com/articles/data-structures-with-javascript-tree--cms-23393)
+* [Computer science in JavaScript: Binary search tree](https://www.nczonline.net/blog/2009/06/09/computer-science-in-javascript-binary-search-tree-part-1/)

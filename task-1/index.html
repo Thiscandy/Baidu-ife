@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset="utf-8">
+  	<title>零基础JavaScript编码(一)</title>
+  </head>
+<body>
+
+  <label>请输入北京今天空气质量：<input id="aqi-input" type="text"></label>
+    <button id="button">确认填写</button>
+
+    <div>您输入的值是：<span id="aqi-display">尚无录入</span></div>
+
+<script type="text/javascript">
+
+(function() {
+  /*    
+    在注释下方写下代码
+    给按钮button绑定一个点击事件
+    在事件处理函数中
+    获取aqi-input输入的值，并显示在aqi-display中
+  */
+
+  /*
+    value 获取文本框值
+    innerHTML 属性设置或返回表格行的开始和结束标签之间的 HTML
+    addEventListener() 方法用于向指定元素添加事件句柄
+    onclick 事件会在对象被点击时发生
+  */
+
+  var $ = function(id){
+  	return document.getElementById(id);
+  }
+
+  /*
+    第一种方法
+
+  function con(){
+  	var
+		txt = $('aqi-input').value,
+		xs  = $('aqi-display');
+
+  	if (txt) {
+  		xs.innerHTML = txt;
+  	} else {
+  		xs.innerHTML = "尚无录入";
+  	}
+  }
+
+  $('button').addEventListener('click',con);
+
+  */
+
+  // 第二种方法
+
+  $('button').onclick = function(){
+
+  	var
+  		text = $('aqi-input').value,
+  		xs   = $('aqi-display');
+
+  	if (text) {
+  		xs.innerHTML = text;
+  	} else {
+  		xs.innerHTML = "尚无录入";
+  	}
+  }
+
+})();
+
+</script>
+</body>
+</html>

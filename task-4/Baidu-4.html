@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>基础JavaScript练习(一)</title>
+  	<style>
+  		input[type=text] {
+  			border: 1px solid #ddd;
+  		}
+  		input[type=button] {
+  			color: #000;
+  			border: 1px solid #ddd;
+  			background: #fff;
+  		}
+  		input[type=button]:hover {
+  			cursor:pointer;
+  		}
+  		#xsul div {
+  			float: left;
+  			padding: 2px 13px;
+  			line-height: 40px;
+  			margin: 5px 5px 0 0 ;
+  			background: red;
+  			text-align: center;
+  			color: #fff;
+  			cursor:pointer;
+  		}
+  	</style>
+  </head>
+<body>
+
+	<div>
+		<input type="text" placeholder="请输入数字" id="text" />
+		<input type="button" value="左侧入" id="leftin">
+		<input type="button" value="右侧入" id="rightin">
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="button" value="左侧出" id="leftout">
+		<input type="button" value="右侧出" id="rightout">
+	</div>
+	<div id="xsul">
+		<div>10</div>
+		<div>3</div>
+		<div>7</div>
+		<div>12</div>
+		<div>11</div>
+		<div>30</div>
+	</div>
+
+<script>
+	function $(int){
+		return document.getElementById(int);
+	};
+
+	var
+	    txt = $('text'),
+	    xs  = $('xsul');
+
+	/*** 当文本框失去焦点的时候检查值
+	 ** addEventListener() 方法用于向指定元素添加事件句柄
+	 ** onblur() 元素失去焦点时触发
+	 ** match() 方法可在字符串内检索指定的值，或找到一个或多个正则表达式的匹配
+	 */
+	txt.addEventListener('blur',function(){
+		if (!txt.value.match(/^[0-9]*$/)) {
+			alert('请输入数字！');
+			txt.value = '';
+		}
+	});
+
+	/*** 插入函数
+	 ** createElement() 方法通过指定名称创建一个元素
+	 ** createTextNode() 可创建文本节点
+	 ** appendChild() 方法向节点添加最后一个子节点
+	 ** insertBefore() 方法在指定的已有子节点之前插入新的子节点
+	 */
+	function insert(int){
+		if (txt.value) {
+			var
+				div  = document.createElement("div"),
+				text = document.createTextNode(txt.value);
+			div.appendChild(text);
+			if (int) { xs.insertBefore(div,xs.childNodes[0]); }
+				else { xs.appendChild(div); }
+			txt.value = '';
+		} else {
+			alert('请输入数字！');
+		}
+	}
+
+	// 左侧入按钮事件
+	$('leftin').addEventListener('click',function(){
+		insert('int');
+	});
+
+	// 右侧入按钮事件
+	$('rightin').addEventListener('click',function(){
+		insert();
+	});
+
+	/*** 删除函数
+	 ** childNodes 属性返回节点的子节点集合
+	 ** 子节点集合里有 #text 代表HTML上的代码空格节点，需要去掉
+	 ** removeChild() 方法指定元素的某个指定的子节点
+	 */
+	function del(int){
+		if (xs.childNodes.length==0) {
+			alert('还没数字请先输入！');
+			return false;
+		};
+
+		var 
+			sta=[],
+			length=xs.childNodes.length;
+		for(var i=0; i<length; i++){
+			if (xs.childNodes[i].nodeType==1) {
+				sta.push(xs.childNodes[i])
+			}
+		}
+
+		if (int) {
+			xs.removeChild(sta[0]);
+		} else {
+			xs.removeChild(sta[sta.length - 1]);
+		}
+	}
+
+	// 左侧出按钮事件
+	$('leftout').addEventListener('click',function(){
+		del('int');
+	});
+
+	// 右侧出按钮事件
+	$('rightout').addEventListener('click',function(){
+		del();
+	});
+
+	// 点击DIV删除
+	xs.addEventListener('click',function(e){
+		xs.removeChild(e.target);
+	});
+
+</script>
+
+</body>
+</html>

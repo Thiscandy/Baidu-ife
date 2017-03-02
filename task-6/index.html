@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  	<meta charset="utf-8">
+  	<title>基础JavaScript练习(三)</title>
+  	<style>
+  	  body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      textarea {
+      	width: 100%;
+      }
+      input {
+        border: 1px solid #ddd;
+        background-color: #fff;
+        border-radius: 10px;
+        padding:5px 10px;
+      }
+      input[type=button] {
+        color: #000;
+        background: #fff;
+      }
+      input[type=button]:hover {
+        cursor:pointer;
+        background-color: #eee;
+      }
+      #xsul {
+      	padding-left: 0;
+        display: flex;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+      #xsul div {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        color: #fff;
+        text-align: center;
+        background-color: #0cf;
+        margin: 2px 2px;
+        line-height: 50px;
+        border-radius: 10px;
+        transition: all 0.5s;
+      }
+      #xsul div:hover {
+        cursor:pointer;
+      }
+  	</style>
+  </head>
+<body>
+	
+	<textarea placeholder="批量输入多个内容，格式可以为数字、中文、英文等，可以通过用回车，逗号（全角半角均可），顿号，空格（全角半角、Tab等均可）等符号作为不同内容的间隔" id="text" cols="100" rows="5"></textarea>
+
+	<div style="margin:20px auto 0px;">
+		<input type="button" value="左侧入" id="leftin">
+		<input type="button" value="右侧入" id="rightin">
+		<input type="button" value="左侧出" id="leftout">
+		<input type="button" value="右侧出" id="rightout">
+		<input type="text" placeholder="请输入想查询值" id="cxbq">
+		<input type="button" value="查询" id="cx">
+		<input type="button" value="刷新页面" id="reload">
+	</div>
+	<div id="xsul">
+		<div>10</div>
+		<div>3</div>
+		<div>12</div>
+		<div>11</div>
+		<div>30</div>
+		<div>11</div>
+		<div>12</div>
+		<div>3</div>
+	</div>
+
+<script>
+	function $(int){
+		return document.getElementById(int);
+	};
+
+	var
+	    txt = $('text'),
+	    xs  = $('xsul');
+
+	/*** 检查
+	 ** replace() 方法用于在字符串中用一些字符替换另一些字符，或替换一个与正则表达式匹配的子串
+	 ** split() 方法用于把一个字符串分割成字符串数组
+	 ** 用正则匹配文本框里的字符串把特殊符号变成空格，然后分割成字符串数组
+	 */
+	function glcs() {
+		value = txt.value.replace(/[^\d\u4e00-\u9fa5a-zA-Z]+/g, " ").split(" ");
+		if(value[0]!==""){
+			return value;
+		} else {
+			alert('请先输入！');
+			return false;
+		}
+	}
+	
+	/*** 插入函数
+	 ** createElement() 方法通过指定名称创建一个元素
+	 ** createTextNode() 可创建文本节点
+	 ** appendChild() 方法向节点添加最后一个子节点
+	 ** insertBefore() 方法在指定的已有子节点之前插入新的子节点
+     ** setAttribute() 方法添加指定的属性，并为其赋指定的值
+	 */
+	function insert(int){
+		if(glcs()){
+			var len = xs.childNodes.length;
+			for(var i = 0; i < value.length;i++ ){
+				if (value[i]!=false) {
+					if (len<60) {
+						var
+							div = document.createElement('div'),
+							nod = document.createTextNode(value[i]);
+						div.appendChild(nod);
+						if (int) {
+							xs.insertBefore(div,xs.childNodes[0]);
+							div.setAttribute('title',value[i]);
+						} else {
+							xs.appendChild(div);
+							div.setAttribute('title',value[i]);
+						}
+					} else {
+						alert('不能再多了哦~');
+					}
+				}
+			}
+		}
+	}
+
+	// 左侧入按钮事件
+	$('leftin').addEventListener('click',function(){
+		insert('int');
+	});
+
+	// 右侧入按钮事件
+	$('rightin').addEventListener('click',function(){
+		insert();
+	});
+
+	/*** 删除函数
+	 ** childNodes 属性返回节点的子节点集合
+	 ** 子节点集合里有 #text 代表HTML上的代码空格节点，需要去掉
+	 ** push() 方法可向数组的末尾添加一个或多个元素，并返回新的长度
+	 ** removeChild() 方法指定元素的某个指定的子节点
+	 */
+	function del(int){
+		var 
+			sta=[],
+			length=xs.childNodes.length;
+
+		for(var i=0; i<length; i++){
+			if (xs.childNodes[i].nodeType==1) {
+				sta.push(xs.childNodes[i])
+			}
+		}
+
+		if (sta.length==0) {
+			alert('无法侧出了哦~');
+			return false;
+		};
+
+		if (int) {
+			xs.removeChild(sta[0]);
+		} else {
+			xs.removeChild(sta[sta.length - 1]);
+		}
+	}
+
+	// 左侧出按钮事件
+	$('leftout').addEventListener('click',function(){
+		del('int');
+	});
+
+	// 右侧出按钮事件
+	$('rightout').addEventListener('click',function(){
+		del();
+	});
+
+	// 点击DIV删除
+	xs.addEventListener('click',function(e){
+		xs.removeChild(e.target);
+	});
+
+	/*** 查询按钮
+	 ** indexOf() 方法可返回某个指定的字符串值在字符串中首次出现的位置
+	 ** 检查的字符串.indexOf(检索的字符串)
+	 ** 如果要检索的字符串值没有出现，则该方法返回 -1
+	 */
+	$('cx').addEventListener('click',function(){
+		var
+			ac   = 0,
+			sta  = [],
+			zj   = xs.childNodes,
+			len  = zj.length,
+			text = $('cxbq').value;
+
+		for(var i=0; i<len; i++){
+			if (zj[i].nodeType==1) {
+				sta.push(zj[i])
+			}
+		}
+
+		if (sta.length!=0) {
+
+			if (!text) { alert('请先输入查询值！');  return false; };
+
+			for(var i=0; i<sta.length; i++){
+
+				if (sta[i].innerText.indexOf(text) > -1) {
+					sta[i].style.backgroundColor='#6f6';
+					sta[i].style.color='#000';
+					ac = 1;
+				} else {
+					sta[i].style.backgroundColor='#0cf';
+					sta[i].style.color='#fff';
+				}
+
+			}
+			if (ac == 0) { alert('没有对应值！'); $('cxbq').value=''; }
+		} else {
+			alert('请先加入值！');
+		}
+	});
+
+	// 刷新页面按钮
+	$('reload').addEventListener('click',function(){ location.reload(); });
+
+</script>
+
+</body>
+</html>

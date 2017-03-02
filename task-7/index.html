@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  	<meta charset="utf-8">
+  	<title>JavaScript和树（一）</title>
+  	<style>
+  		input {
+  		  border: 1px solid #aaa;
+  		  background-color: #fff;
+  		  border-radius: 10px;
+  		  padding:5px 10px;
+  		}
+  		input[type=button] {
+  		  color: #000;
+  		  background: #fff;
+  		}
+  		input[type=button]:hover {
+  		  cursor:pointer;
+  		  background-color: #eee;
+  		}
+  		#main {
+  			margin: 0 auto;
+  			width: 780px;
+  			height: 200px;
+  		}
+  		#main div {
+  			margin: 12px;
+  			padding: 12px;
+  			border: 2px solid #ccc;
+  			background:#fff;
+  			float: left;
+  			transition: 1s;
+  		}
+  	</style>
+  </head>
+<body>
+
+	<div id="main">
+		<div id="div">
+			<div>
+				<div>
+					<div></div>
+					<div></div>
+				</div>
+				<div>
+					<div></div>
+					<div></div>
+				</div>
+			</div>
+			<div>
+				<div>
+					<div></div>
+					<div></div>
+				</div>
+				<div>
+					<div></div>
+					<div></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div style="margin:0 auto;width:260px;">
+		<input type="button" value="先序遍历" id="before">
+		<input type="button" value="中序遍历" id="center">
+		<input type="button" value="后序遍历" id="back">
+	</div>
+
+<script>
+	function $(int){
+		return document.getElementById(int);
+	}
+
+	var
+		div  = $('div'),
+		data = [],
+		bl   = 0;
+
+	// 页面加载完成后加上按钮事件
+	window.onload = function(){
+		button($('before'),preOrder);
+		button($('center'),inOrder);
+		button($('back'),postOrder);
+	}
+
+	// 按钮事件
+	function button(obj,fun){
+		obj.addEventListener('click',function(){
+			if (bl) {
+				alert('正在遍历中···');
+			} else {
+				fun(div);
+				set(data);
+				data=[];
+			}
+		});
+	}
+
+	// 先序遍历
+	function preOrder(node){
+		if (node) {
+			data.push(node);
+			preOrder(node.firstElementChild);
+			preOrder(node.lastElementChild);
+		}
+	}
+
+	// 中序遍历
+	function inOrder(node){
+	    if(node){
+	        inOrder(node.firstElementChild);//先访问左子树
+	        data.push(node);
+	        inOrder(node.lastElementChild);//最后访问右子树
+	    }
+	}
+
+	// 后序遍历
+	function postOrder(node){
+	    if(node){
+	        postOrder(node.firstElementChild);
+	        postOrder(node.lastElementChild);
+	        data.push(node);
+	    }
+	}
+
+	/*** 延迟显示遍历结果 
+	 ** setInterval() 方法会不停地调用函数，直到 clearInterval() 被调用或窗口被关闭
+	 ** clearInterval() 方法可取消由 setInterval() 设置的 timeout
+	 */
+	function set(data){
+	    var i = 0;
+	    console.dir(data);
+	    var timer = setInterval(function(){
+	    	// 禁止按按钮
+	    	// 如果i小于数组的长度
+	        bl = 1;
+	        if(i<data.length){
+	       		// 如果i>0 DIV的框为白色
+	       		// 把DIV框为红色
+	            if(i>0){
+	            	// 把上一个DIV变成白色
+	                data[i-1].style.background = "#fff";                
+	            }
+	            data[i].style.background = "red";
+	        }else if(i == data.length){
+	        	// 结束掉setInterval()
+	        	// 可以执行按钮功能
+	        	// 把最后的红色框变回白色
+	            clearInterval(timer);
+	            bl = 0;
+	            data[i-1].style.background = "#fff";
+	        }
+	        i++;
+	    },1000);
+	}
+</script>
+
+</body>
+</html>

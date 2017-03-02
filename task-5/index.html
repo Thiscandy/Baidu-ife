@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>基础JavaScript练习(二)</title>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      input {
+        border: 1px solid #ddd;
+      }
+      input[type=button] {
+        color: #000;
+        background: #fff;
+      }
+      input[type=button]:hover {
+        cursor:pointer;
+      }
+      #xsul {
+        display: flex;
+        align-items: flex-end;
+        height: 100px;
+        margin-top: 10px;
+      }
+      #xsul div {
+        display: inline-block;
+        width: 15px;
+        background-color: red;
+        text-indent: -9999px;
+        margin: 0 1px;
+        line-height: 50px;
+        transition: all 0.5s;
+      }
+      #xsul div:hover {
+        cursor:pointer;
+      }
+    </style>
+  </head>
+<body>
+
+    <div>
+        <input type="text" placeholder="请输入10-100数字" id="text" />
+        <input type="button" value="左侧入" id="leftin">
+        <input type="button" value="右侧入" id="rightin">
+        &nbsp;&nbsp;
+        <input type="button" value="左侧出" id="leftout">
+        <input type="button" value="右侧出" id="rightout">
+        &nbsp;&nbsp;
+        <input type="button" value="随机生成数" id="sjscs">
+        <input type="button" value="排序" id="px">
+        <input type="button" value="刷新页面" id="reload">
+    </div>
+    <div id="xsul"></div>
+
+</body>
+<script>
+    // 精简获取ID
+    function $(int) {
+        return document.getElementById(int);
+    }
+
+    var
+        txt = $('text'),    // 文本框ID
+        xs  = $('xsul'),    // 显示div的ID
+        eva = 0;            // 是否在排序的全局变量 0 否 1是
+
+    /*** 判断输入的值
+     ** parseInt() 把字符串转换为整数的函数
+     ** isNaN() 函数用于检查其参数是否是非数字值。
+     */
+    function validNum(){
+        var 
+            num = parseInt(txt.value),
+            liNum = xs.childNodes.length;
+
+        if (eva!=0) {
+            alert('排序中不能添加！');
+        } else {
+            if ((isNaN(num))||(num < 10)||(num > 100)) {
+                alert("请输入10-100数字！");
+                return false;
+            } else {
+                if (liNum > 29) {
+                    alert('最多只能输入30个哦~');
+                } else {
+                    return num;
+                }
+            }
+        }
+    }
+
+    /*** 插入函数
+     ** createElement() 方法通过指定名称创建一个元素
+     ** createTextNode() 可创建文本节点
+     ** appendChild() 方法向节点添加最后一个子节点
+     ** insertBefore() 方法在您指定的已有子节点之前插入新的子节点
+     ** setAttribute() 方法添加指定的属性，并为其赋指定的值
+     */
+    function insert(int){
+        var
+            value   = validNum(),
+            liNum   = xs.childNodes.length,
+            newItem = document.createElement('div'),
+            newText = document.createTextNode(value);
+
+        if (value) {
+            newItem.appendChild(newText);
+
+            if (int) {
+                xs.insertBefore(newItem,xs.childNodes[0]);
+            } else {
+                xs.appendChild(newItem);
+            }
+
+            newItem.style.height = value+'px';
+            newItem.setAttribute('title',value);
+            txt.value = '';
+        }
+    }
+
+    // 左侧入按钮
+    $('leftin').addEventListener('click',function(){ insert('int'); });
+
+    // 右侧入按钮
+    $('rightin').addEventListener('click',function(){ insert(); });
+
+    /*** 删除函数
+     ** childNodes 属性返回节点的子节点集合
+     ** firstChild 属性返回指定节点的首个子节点，以 Node 对象
+     ** removeChild() 方法指定元素的某个指定的子节点
+     */
+    function del(int){
+        if (xs.childNodes.length==0) { alert('无法侧出了哦~'); return false; };
+        if (eva!=0) { alert('排序中不能删除！');return false; };
+        if (int) {
+            alert('删除最左侧节点：'+xs.firstChild.innerHTML);
+            xs.removeChild(xs.firstChild);
+        } else {
+            alert('删除最右侧节点：'+xs.childNodes[xs.childNodes.length - 1].innerHTML);
+            xs.removeChild(xs.childNodes[xs.childNodes.length - 1]);
+        }
+    }
+
+    // 左出入按钮
+    $('leftout').addEventListener('click',function(){ del('int'); });
+
+    // 右出入按钮
+    $('rightout').addEventListener('click',function(){ del(); });
+
+    // 点击DIV删除
+    xs.addEventListener('click',function(e){
+        if (eva==0) { xs.removeChild(e.target); }
+    });
+
+    /*** 随机生成数按钮
+     ** Math.floor() 向下取整计算，它返回的是小于或等于函数参数，并且与之最接近的整数
+     ** random() 方法可返回介于 0 ~ 1 之间的一个随机数
+     */
+    $('sjscs').addEventListener('click',function(){
+        if (eva==0) {
+            var html = "";
+            for (var i = 1; i < 31; i++) {
+                var x = Math.floor(Math.random() * 90 + 10);
+                html += "<div style='height:" + x + "px;' title=" + x + ">" + x + " </div>";
+                //  因为我排序时候提取的是innerHTML，所以这里要把值写入innerHTML
+            }
+            xs.innerHTML = html;
+        } else {
+            alert('排序中不能随机生成数！');
+        }
+    });
+
+    /*** 循环遍历显示
+     ** insertBefore() 方法在您指定的已有子节点之前插入新的子节点
+     ** setTimeout() 方法用于在指定的毫秒数后调用函数或计算表达式
+     ** style.backgroundColor 设置css样式中的背景色
+     */
+    function sort()
+    {
+        var
+            div = xs.childNodes,
+            len = div.length,
+            i   = 0,
+            j   = len-1;
+
+        if (len>1) {
+
+            var time = function(){
+                if (i < len) {
+                    if (j > i) {
+                        div[j].style.backgroundColor='red';
+                        if (parseInt(div[j].innerHTML) < parseInt(div[j - 1].innerHTML)) {
+                            temp = div[j];
+                            div[j] = div[j-1];
+                            div[j-1] = temp;
+                            div[j].style.backgroundColor='#00ff00';
+                            xs.insertBefore(div[j],div[j-1]);
+                            setTimeout(time,100);
+                            j--;
+                        } else {
+                            j--;
+                            div[j].style.backgroundColor='#00ff00';
+                            setTimeout(time,100);
+                        }
+                    } else {
+                        i++;
+                        div[j].style.backgroundColor='#000';
+                        j = len-1;
+                        setTimeout(time,100);
+                    }
+                } else { 
+                    eva=0;
+                }
+            }
+            setTimeout(time,100);
+
+        } else {
+            alert('请先插入至少两条数据才能比较！');
+        }
+    }
+
+    // 排序按钮
+    $('px').addEventListener('click',function(){
+        if (eva!=1) {
+            eva = 1;
+            sort();
+        } else {
+            alert('请不要重复操作！');
+        }
+    });
+
+    // 刷新页面按钮
+    // location.reload() 方法用于重新加载当前文档
+    $('reload').addEventListener('click',function(){ location.reload(); });
+</script>
+</html>

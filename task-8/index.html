@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  	<meta charset="utf-8">
+  	<title>JavaScript和树（二）</title>
+    <link href="../favicon.ico" rel="icon" type="image/x-icon" />
+  	<style>
+  		input {
+  		  border: 1px solid #aaa;
+  		  background-color: #fff;
+  		  border-radius: 10px;
+  		  padding:5px 10px;
+  		}
+  		input[type=button] {
+  		  color: #000;
+  		  background: #fff;
+  		}
+  		input[type=button]:hover {
+  		  cursor:pointer;
+  		  background-color: #eee;
+  		}
+  		#main {
+  			margin: 0 auto 20px;
+  			width: 100%;
+  		}
+  		#main div {
+        display: inline-block;
+        margin: 5px 5px;
+        padding: 10px 5px;
+  			border: 2px solid #ccc;
+  			background:#fff;
+  			transition: 1s;
+  		}
+  	</style>
+  </head>
+<body>
+
+    <div id="main">
+      <div id="div">
+        <div>
+          <div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div></div>
+          <div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+        <div>
+          <div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div>
+            <div>
+              <div></div>
+            </div>
+            <div></div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+
+    <div style="width:340px;margin:0 auto;">
+        <input type="button" value="开始遍历" id="ksbl">
+        <input type="text" placeholder="请输入要查询的值···" id="text">
+        <input type="button" value="查询" id="cx">
+    </div>
+
+<script>
+  function $(int){
+    return document.getElementById(int);
+  }
+
+  var
+    main  = $('main'),
+    div   = $('div'),
+    array = main.getElementsByTagName('div')
+    bl    = 0,
+    data  = [],
+    datas = [],
+    namedata = ["Animation","background","border","text","box","background","height","width","font","content","grid","list","margin","marquee","column","size","padding","bottom","clear","float","text"];
+
+  // 页面加载完成后加上按钮事件
+  window.onload = function(){
+    button($('ksbl'),preOrder);
+    button($('cx'),preOrder,'int');
+    name();
+  }
+
+  // 重置数组
+  function init(){
+    for(var i=0; i<datas.length; i++){
+      datas[i].style.background = '';
+    }
+    data=[];
+  }
+
+  // 给DIV赋值
+  function name(){
+    for(var i=0; i<array.length; i++) {
+      array[i].innerHTML += namedata[i];
+      array[i].data = namedata[i];
+    }
+  }
+
+  // 深度优先
+  function preOrder(node){
+    if (node) {
+      data.push(node);
+      for(var i=0; i<node.children.length; i++){
+        preOrder(node.children[i]);
+      }
+    }
+  }
+
+
+  // 按钮事件
+  function button(obj,fun,int){
+    obj.addEventListener('click',function(){
+      if (bl) {
+        alert('正在遍历中···');
+      } else {
+        fun(div);
+        if(int){ set(data,int); } else { set(data); };
+        data=[];
+      }
+    });
+  }
+
+
+  /*** 延迟显示遍历结果 
+   ** setInterval() 方法会不停地调用函数，直到 clearInterval() 被调用或窗口被关闭
+   ** clearInterval() 方法可取消由 setInterval() 设置的 timeout
+   */
+  function set(data,int){
+      var i   = 0,
+          me  = 0,
+          skt = $('text').value;
+      if (int) { init();if (!skt) { alert('请先输入值~'); return false }; }
+
+      var timer = setInterval(function(){
+
+          bl = 1;
+          if(i<data.length){
+
+              if(i>0){
+
+                  if(data[i-1].style.backgroundColor == 'red'){
+                    data[i-1].style.background = '';
+                  }
+              }
+
+              data[i].style.background = 'red';
+
+              if (int) {
+                if (skt == data[i].data) {
+                  data[i].style.background = 'blue';
+                  datas.push(data[i]);
+                  me = 1;
+                }
+              }
+
+          } else if(i == data.length){
+              clearInterval(timer);
+              bl = 0;
+              if(data[i-1].style.backgroundColor == 'red'){
+                data[i-1].style.background = '';
+              }
+              if (int) {
+                if (me == 0) { alert("没有找到哦~") }
+              }
+          }
+          i++;
+      },500);
+  }
+</script>
+
+</body>
+</html>

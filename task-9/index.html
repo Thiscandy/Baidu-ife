@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  	<meta charset="utf-8">
+  	<title>JavaScript和树（三）</title>
+  	<link href="../favicon.ico" rel="icon" type="image/x-icon" />
+  	<style>
+  	  input {
+  	    border: 1px solid #aaa;
+  	    background-color: #fff;
+  	    border-radius: 10px;
+  	    padding:5px 10px;
+  	  }
+  	  input[type=button] {
+  	    color: #000;
+  	    background: #fff;
+  	  }
+  	  input[type=button]:hover {
+  	    cursor:pointer;
+  	    background-color: #eee;
+  	  }
+  	  #main {
+  	  	margin: 0 auto 20px;
+  	  	width: 100%;
+  	  }
+  	  #main div {
+  	  	display: inline-block;
+  	  	margin: 5px 5px;
+  	  	padding: 10px 5px;
+  	  	border: 2px solid #ccc;
+  	  	background:#fff;
+  	  	transition: 1s;
+  	  }
+  	</style>
+  </head>
+<body>
+
+	<div id="main">
+	  <div id="div">
+	    <div>
+	      <div>
+	        <div></div>
+	        <div></div>
+	        <div></div>
+	        <div></div>
+	      </div>
+	      <div></div>
+	      <div>
+	        <div></div>
+	        <div></div>
+	      </div>
+	    </div>
+	    <div>
+	      <div>
+	        <div></div>
+	        <div></div>
+	        <div></div>
+	      </div>
+	      <div>
+	        <div>
+	          <div></div>
+	        </div>
+	        <div></div>
+	      </div>
+	    </div>
+	    <div></div>
+	  </div>
+	</div>
+
+	<div style="width:480px;margin:0 auto 15px;">
+		<input id="del" type="button" value="删除选中节点及所有子节点">
+		<input id="txt" type="text" placeholder="请输入要添加子节点的内容···">
+		<input id="add" type="button" value="添加子节点">
+	</div>
+
+	<div style="width:410px;margin:0 auto;">
+	    <input id="ksbl" type="button" value="开始遍历">
+	    <input id="text" type="text" placeholder="请输入要查询的值···">
+	    <input id="cx" type="button" value="查询">
+	    <input type="button" value="刷新页面" onclick="javascript:location.reload();">
+	</div>
+
+<script>
+	function $(int){
+	  return document.getElementById(int);
+	}
+
+	var
+	  div   = $('div'),
+	  array = $('main').getElementsByTagName('div'),
+	  bl    = 0,      // 遍历值=0 未遍历
+	  data  = [],     // 存遍历的值
+	  datas = [],     // 存查询的值
+	  namedata = ["Animation","background","border","text","box","background","height","width","font","content","grid","list","margin","marquee","column","size","padding","bottom","clear","float","text"];  // 初始DIV的值
+
+	// 页面加载完成后加上按钮事件
+	window.onload = function(){
+	  button($('ksbl'),preOrder);      // 开始遍历按钮
+	  button($('cx'),preOrder,'int');  // 查询按钮
+	  name();  // 给DIV赋值
+	  tree();  // 选中节点变色
+	}
+
+	// 重置数组
+	function init(){
+		for(var i=0; i<array.length; i++){
+		  array[i].style.background = '';
+		}
+		data=[];
+		select='';
+	}
+
+	// 给DIV赋值
+	function name(){
+	  for(var i=0; i<array.length; i++) {
+	    array[i].innerHTML += namedata[i];
+	    array[i].data = namedata[i];
+	  }
+	}
+
+	// 深度优先
+	function preOrder(node){
+	  if (node) {
+	    data.push(node);
+	    for(var i=0; i<node.children.length; i++){
+	      preOrder(node.children[i]);
+	    }
+	  }
+	}
+
+	// 按钮事件
+	function button(obj,fun,int){
+	  obj.addEventListener('click',function(){
+	    if (bl) {
+	      alert('正在遍历中···');
+	    } else {
+	      fun(div);
+	      if(int){ set(data,int); } else { set(data); };
+	      data=[];
+	    }
+	  });
+	}
+
+	/*** 延迟显示遍历结果 
+	 ** setInterval() 方法会不停地调用函数，直到 clearInterval() 被调用或窗口被关闭
+	 ** clearInterval() 方法可取消由 setInterval() 设置的 timeout
+	 */
+	function set(data,int){
+	    var i   = 0,
+	        me  = 0,
+	        skt = $('text').value;
+	    init();
+	    if (int) { if (!skt) { alert('请先输入值~'); return false }; }
+
+	    var timer = setInterval(function(){
+
+	        bl = 1;
+	        if(i<data.length){
+
+	            if(i>0){
+
+	                if(data[i-1].style.backgroundColor == 'red'){
+	                  data[i-1].style.background = '';
+	                }
+	            }
+
+	            data[i].style.background = 'red';
+
+	            if (int) {
+	              if (skt == data[i].data) {
+	                data[i].style.background = 'blue';
+	                datas.push(data[i]);
+	                me = 1;
+	              }
+	            }
+
+	        } else if(i == data.length){
+	            clearInterval(timer);
+	            bl = 0;
+	            if(data[i-1].style.backgroundColor == 'red'){
+	              data[i-1].style.background = '';
+	            }
+	            if (int) {
+	              if (me == 0) { alert("没有找到哦~") }
+	            }
+	        }
+	        i++;
+	    },400);
+	}
+
+	// 存选中的DIV
+	var select;
+	/*** 选中节点变色
+	 ** event.stopPropagation() 终止事件在传播过程的捕获、目标处理或起泡阶段进一步传播。调用该方法后，该节点上处理该事件的处理程序将被调用，事件不再被分派到其他节点。
+	 ** 
+	 */
+	function tree() {
+		
+		preOrder(div);
+		for( var i =0; i < data.length; i++ ) {
+			data[i].onclick = function(e) {
+				if (bl) { alert('正在遍历中···');return false };
+				init();
+			    this.style.backgroundColor = '#00FFFF';
+			    e.stopPropagation();// 阻止事件冒泡
+			    select = this;
+			};
+		}
+	}
+
+	/*** 删除选中节点
+	 ** parentNode 属性以 Node 对象的形式返回指定节点的父节点。
+	 */
+	$('del').onclick = function(){
+		if (bl) {
+			alert('正在遍历中···');
+		}else if (!select) {
+			alert('请先选中一个节点哦');
+		} else {
+			select.parentNode.removeChild(select);
+			select='';
+		}
+	}
+
+	// 添加子节点
+	$('add').onclick = function(){
+		var txt = $('txt').value;
+
+		if (bl) {
+			alert('正在遍历中···');
+		} else if (select.length==0) {
+			alert('请先选中一个节点哦');
+		} else if (!txt) {
+			alert('请先输入添加子节点的内容···');
+		} else {
+
+			var value = document.createElement('div');
+			value.innerHTML = txt;
+			value.data = txt;
+			value.onclick = function(e){
+				if (bl) { alert('正在遍历中···');return false };
+				init();
+				this.style.backgroundColor = '#00FFFF';
+				e.stopPropagation();//阻止事件冒泡
+				select = this;
+			}
+			select.appendChild(value);
+		}
+	}
+</script>
+
+</body>
+</html>

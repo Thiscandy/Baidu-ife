@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  	<meta charset="utf-8">
+  	<title>表单（一）单个表单项的检验</title>
+  	<link href="../favicon.ico" rel="icon" type="image/x-icon" />
+  	<style>
+  		.main { width:350px;margin:100px auto 0px; }
+  		.main label { width:50px;text-align: left;display: inline-block; }
+  		input { border: 1px solid #aaa;background-color: #fff;border-radius: 5px;padding:5px 10px; }
+  		input[type=button] {  color: #fff;background: #428bca;margin: 0 0 0 10px; }
+  		input[type=button]:hover { cursor:pointer;background: #5bc0de; }
+  		.cue { font-size: 12px;color: #808080;margin:5px 0 0 55px; }
+  	</style>
+  </head>
+<body>
+
+	<div class="main">
+		<div>
+			<label>名称</label>
+			<input type="text">
+			<input type="button" value="验证">
+		</div>
+		<div>
+			<p class="cue">必填，长度为4~16位字符</p>
+		</div>
+	</div>
+
+<script>
+	/*
+		利用 Unicode 编码的数字、大小写字母都小于等于128的特性去判断给予长度控制
+
+		charCodeAt() 方法可返回指定位置的字符的 Unicode 编码。这个返回值是 0 - 65535 之间的整数。
+	*/
+
+	var 
+		text  = document.getElementsByTagName('input')[0],
+		cue   = document.getElementsByTagName('p')[0],
+		len   = function(int){
+			var length = 0;
+			for(var i=0; i < int.length; i++) {
+				var code = int.charCodeAt(i);
+				if (code >=0 && code <=128) {
+					length +=1;
+				} else {
+					length +=2;
+				}
+			}
+			return length;
+		};
+
+	document.getElementsByTagName('input')[1].onclick = function(){
+
+		if (len(text.value)==0) {
+
+			cue.innerHTML     = '名称不能为空';
+			cue.style.color   = '#de000f';
+			text.style.border = '1px solid #de000f';
+
+		} else if (len(text.value) >=4 && len(text.value) <= 16) {
+
+			cue.innerHTML     = '名称格式正确';
+			cue.style.color   = '#60ba44';
+			text.style.border = '1px solid #60ba44';
+
+		} else {
+
+			cue.innerHTML     ='请输入长度为4~16位字符';
+			cue.style.color   = '#de000f';
+			text.style.border = '1px solid #de000f'; 
+
+		}
+	}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  	<meta charset="utf-8">
+  	<title>表单（二）多个表单项的动态校验</title>
+  	<link href="../favicon.ico" rel="icon" type="image/x-icon" />
+  	<style>
+  		body { padding:200px 0 0 0;margin: 0; }
+  		.main { width:350px;margin:0 auto 10px; }
+  		.main label { width:70px;text-align: right;display: inline-block;margin-right: 10px; }
+  		input { border: 1px solid #aaa;background-color: #fff;border-radius: 5px;padding:5px 10px; }
+  		button { border: 1px solid #aaa;color: #fff;background: #428bca;margin: 0 0 0 10px; }
+  		button:hover { cursor:pointer;background: #5bc0de; }
+  		.but { float:right;margin-right:75px;width: 70px;height: 30px;border-radius: 10px; }
+  		.cue { font-size: 12px;color: #808080;margin:15px 0 20px 85px; display: none;  }
+  	</style>
+  </head>
+<body>
+
+	<div class="main">
+		<div>
+			<label>名称</label>
+			<input type="text">
+		</div>
+		<div>
+			<p class="cue">请输入长度为4~16位字符</p>
+		</div>
+	</div>
+	<div class="main">
+		<div>
+			<label>密码</label>
+			<input type="password">
+		</div>
+		<div>
+			<p class="cue">请输入4~16位的密码</p>
+		</div>
+	</div>
+	<div class="main">
+		<div>
+			<label>密码确认</label>
+			<input type="password">
+		</div>
+		<div>
+			<p class="cue">再次输入相同密码</p>
+		</div>
+	</div>
+	<div class="main">
+		<div>
+			<label>邮箱</label>
+			<input type="text">
+		</div>
+		<div>
+			<p class="cue">请输入正确的邮箱格式(xx@163.com)</p>
+		</div>
+	</div>
+	<div class="main">
+		<div>
+			<label>手机</label>
+			<input type="text">
+		</div>
+		<div>
+			<p class="cue">请输入正确的手机号码</p>
+		</div>
+	</div>
+	<div class="main">
+		<button class="but">提交</button>
+	</div>
+
+
+<script>
+	function $(int){
+		return document.getElementsByTagName(int);
+	}
+
+	var inp = $('input'),
+		p   = $('p'),
+		cue =[
+		{true:'名称格式正确',false:'名称格式错误',nul:'名称不能为空'},
+		{true:'密码可用',false:'密码格式错误',nul:'密码不能为空'},
+		{true:'密码输入一致',false:'密码输入不一致',nul:'密码确认不能为空'},
+		{true:'邮箱格式正确',false:'邮箱格式错误',nul:'邮箱不能为空'},
+		{true:'手机格式正确',false:'手机格式错误',nul:'手机不能为空'}
+	];
+
+	// 给每个input上获得焦点事件（onfocus）和失去焦点事件（onblur）
+	window.onload = function() {
+
+		for (var i = 0; i < inp.length; i++) {
+			(function(e){
+				inp[e].onfocus = function(){
+					p[e].style.display = 'inline';
+				}
+				inp[e].onblur = function(){
+					var back = check(e);
+					jywc(back,e);
+				}
+			})(i); // 用闭包把i送进函数里
+		}
+	}
+
+	function jywc(back,e){
+		p[e].style.display = 'inline';
+		if (back==0) {
+			p[e].innerHTML = cue[e].nul;
+			p[e].style.color = '#de000f';
+			inp[e].style.border = '1px solid #de000f';
+			inp[e].data = 0;
+		} else if (back==1) {
+			p[e].innerHTML = cue[e].true;
+			p[e].style.color   = '#60ba44';
+			inp[e].style.border = '1px solid #60ba44';
+			inp[e].data = 1;
+		} else if (back==2) {
+			p[e].innerHTML = cue[e].false;
+			p[e].style.color = '#de000f';
+			inp[e].style.border = '1px solid #de000f';
+			inp[e].data = 0;
+		}
+	}
+
+	// 校验函数
+	function check(int){
+		var value = inp[int].value;
+		if (!value) { return 0; } else {
+			switch(int)
+			{
+				case 0:
+					if(/^[a-zA-Z0-9_]{4,16}$/.test(value.replace(/[\u0391-\uFFE5]/g,"nn")))	 { return 1; } 
+					else { return 2; }
+					break;
+				case 1:
+					if (/^\S{4,16}$/.test(value)) { return 1; }
+					else { return 2; }
+					break;
+				case 2:
+					if (value && ($('input')[1].value==value)) { return 1; }
+					else { return 2; }
+					break;
+				case 3:
+					if (/^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[	a-zA-Z0-9]+\.[a-zA-Z]{2,3}/.test(value)) { return 1; }
+					else { return 2; }
+					break;
+				default:
+					if (/^[1][0-9]{10}$/.test(value)) { return 1; }
+					else { return 2; }
+					break;
+			}
+		}
+	}
+
+	// 提交按钮
+	$('button')[0].onclick = function(){
+
+		var zq = 1;  // 判断是否成功的值
+
+		for (var i = 0; i < inp.length; i++) {
+			var che = check(i);
+			if (che!=1) {
+				alert('提交失败！');
+				++zq;
+				jywc(che,i);
+				break;
+			};
+			jywc(che,i);
+		}
+		if (zq==1) { alert('提交成功！') };
+	}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  	<meta charset="utf-8">
+  	<title>听指令的小方块（一）</title>
+  	<link href="../favicon.ico" rel="icon" type="image/x-icon" />
+  	<style>
+      * { margin:0;padding: 0;font-family:'Helvetica Neue','微软雅黑';  }
+      .over { overflow: hidden;height: 600px; }
+  		.main { margin:70px auto 0;width: 519px;height: 509px;border: 2px solid #000; }
+      .number { position: relative;top: -51px;left: -51px;width: 561px; }
+      .x > div { float: left;width: 51px;height: 51px;line-height:51px;text-align: center; }
+      .y > div { width: 51px;height: 51px;line-height: 51px;text-align: center; }
+      li { list-style: none; }
+      .input_local { width: 509px;margin:0 auto;  }
+      input { border: 1px solid #888;background-color: #fff;border-radius: 5px;padding:5px 10px;color: #000;width:240px;height: 40px;font-size: 24px; }
+      input[type=button] { width:70px;height:50px; border: 1px solid #aaa;color: #fff;background: #428bca;margin: 0 0 0 10px; }
+      input[type=button]:hover { cursor:pointer;background: #5bc0de; }
+      .content {
+        position:relative;
+        top:-510px;
+        left:51px;
+      }
+      .across>div{
+        float: left;
+        width:51px;
+        height: 50px;
+        line-height:50px;
+        text-align: center;
+        border-right:1px solid #ccc;
+        border-bottom:1px solid #ccc;
+      }
+      .across>div:last-child{ border-right:none; }
+      #as{
+        position: absolute;
+        width: 51px;
+        height: 30px;
+        background: red;
+        border-top: 20px solid blue;
+        transition: all 0.2s;
+      }
+  	</style>
+  </head>
+<body>
+
+<div class="over">
+  <div class="main">
+    <div class="number">
+      <li class="x">
+        <div></div>
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+        <div>7</div>
+        <div>8</div>
+        <div>9</div>
+        <div>10</div></li>
+      <li class="y">
+        <div></div>
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+        <div>7</div>
+        <div>8</div>
+        <div>9</div>
+        <div>10</div></li>
+      <div class="content">
+        <div id="as"></div>
+        <div class="across"></div>
+        <div class="across"></div>
+        <div class="across"></div>
+        <div class="across"></div>
+        <div class="across"></div>
+        <div class="across"></div>
+        <div class="across"></div>
+        <div class="across"></div>
+        <div class="across"></div>
+        <div class="across"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  <div class="input_local">
+    <input type="text">
+    <input type="button" value="执行">
+  </div>
+
+<script>
+  var a = [];
+
+  var grid = function(obj){
+    this.xy = obj.xy;
+    this.state = obj.state;
+    this.parent = obj.parent;
+    this.node = obj.node;
+  }
+
+  grid.prototype = {
+    add:function(){
+      var div = document.createElement('div');
+      div.className = this.xy[0]+'-'+this.xy[1];
+      this.parent.appendChild(div);
+      this.node = div;
+      this.node.nodes = this;
+      return this;
+    }
+  }
+
+  function cc(){
+    var across = document.getElementsByClassName('across');
+    var content = document.getElementsByClassName('content')[0];
+    for (var i = 0; i < 10; i++) {
+      a[i] = [];
+      for (var j = 0; j < 10; j++) {
+        a[i].push(new grid({xy:[i,j],parent:across[i]}).add())
+      }
+    }
+  }
+
+  window.onload =function(){
+    cc();
+  }
+
+</script>
+
+</body>
+</html>

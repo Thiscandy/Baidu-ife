@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  	<meta charset="utf-8">
+  	<title>表单（三）联动</title>
+  	<link href="../favicon.ico" rel="icon" type="image/x-icon" />
+  	<style>
+  		body { font-size: 25px;font-family: 'Microsoft yahei';padding:100px 0 0 0; }
+  		.main { width:500px;margin: auto; }
+  		input { border: 1px solid #ccc;background-color: #fff;border-radius: 5px;padding:5px 10px;height: 25px; }
+  		.radio { display:inline-block;margin-left:100px; }
+  		.option { margin:30px 0 0 0;line-height: 40px; }
+  		.marg { margin:0 20px 0 50px; }
+  		.select {
+  		    margin-left: 22px;
+  		    width: 160px;
+  		    height: 34px;
+  		    padding: 6px 12px;
+  		    font-size: 14px;
+  		    line-height: 1.42857143;
+  		    color: #555;
+  		    background-color: #fff;
+  		    background-image: none;
+  		    border: 1px solid #ccc;
+  		    border-radius: 4px;
+  		    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+  		    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+  		    -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+  		    -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  		    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  		}
+		li { list-style: none; }
+  		#outschool { display: none; }
+  	</style>
+  </head>
+<body>
+
+	<div class="main">
+		<div>
+			<div class="radio">
+				<label><input type="radio" name="option" checked>在校生</label>
+			</div>
+			<div class="radio">
+				<label><input type="radio" name="option">非在校生</label>
+			</div>
+		</div>
+		<div class="option">
+			<li id="isschool">
+				<span class="marg">学校</span>
+				<select class="select">
+					<option value="yl">影流</option>
+					<option value="ayd">暗影岛</option>
+					<option value="hsmg">黑色玫瑰</option>
+				</select>
+				<select class="select">
+					<option>劫</option>
+					<option>慎</option>
+					<option>凯南</option>
+				</select>
+			</li>
+			<li id="outschool">
+				<span class="marg">就业单位</span>
+				<input type="text" style="width:300px;">
+			</li>
+		</div>
+	</div>
+
+<script>
+	function $(int){
+		return document.getElementsByTagName(int);
+	}
+
+	var
+		yes  = document.getElementById('isschool'),
+		no   = document.getElementById('outschool'),
+		data = {
+			yl:  ['劫','慎','凯南'],
+			ayd: ['赫卡里姆','卡尔萨斯','伊莉斯','锤石'],
+			hsmg:['乐芙兰','萨科','斯维因','奥佩娅']
+		};
+
+	// 显示学校
+	$('input')[0].onclick = function(){
+		yes.style.display = "inline";
+		no.style.display = "none";
+	}
+
+	// 显示单位
+	$('input')[1].onclick = function(){
+		yes.style.display = "none";
+		no.style.display = "inline";
+	}
+
+	// 下拉框改变
+	$('select')[0].onchange = function(){
+		var obj   = $('select')[0],     // 大区框
+			objb  = $('select')[1],     // 英雄框
+			value = obj.options[obj.selectedIndex].value;   // 选择的值
+
+		objb.options.length = 0;     // 清楚下拉框里的值
+
+		// 循环添加上选项
+		for (var i = 0; i< data[value].length; i++) {
+			objb.add(new Option(data[value][i],data[value][i]));
+		}
+		
+	}
+
+</script>
+</body>
+</html>

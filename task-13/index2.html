@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  	<meta charset="utf-8">
+  	<title>听指令的小方块（一）</title>
+  	<link href="../favicon.ico" rel="icon" type="image/x-icon" />
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+  	<script>
+  		// querySelector() 方法返回文档中匹配指定 CSS 选择器的一个元素。
+  		var $ = function(sel){
+  			return document.querySelector(sel);
+  		}
+  		function addHandler(ele,type,handler){
+  			if(ele.addEventListener){
+  				ele.addEventListener(type,handler,false);
+  			}else if(ele.attachEvent){
+  				ele.attachEvent("on" + type,handler);
+  			}else{
+  				ele["on" + type] = handler;
+  			}
+  		}
+  	</script>
+  </head>
+<body>
+	
+	<div id="table_container"></div>
+	<div id="control_panel">
+		<span>↑↓←→改变方向，回车（空格移动）</span>
+	</div>
+
+
+<script>
+// 创建背景
+// setAttribute() 方法添加指定的属性，并为其赋指定的值。
+(function(){
+	var
+		container = $('#table_container'),
+		table = document.createElement('table'),
+		tbody = document.createElement('tbody');
+	for(var i=0; i<11; i++){
+
+		var tr = document.createElement('tr');
+		if (i == 0) {
+			tr.setAttribute('axle','y');
+		}
+
+		for (var j=0; j<11; j++) {
+
+			var td = document.createElement('td');
+			td.setAttribute('index',j);
+			if (i===0 && j!==0) {   // 添加横轴坐标
+				td.innerHTML = j;
+			}
+			if (j===0 && i!==0) {   // 添加纵轴坐标
+				td.innerHTML = i;
+			}
+			if (i===6 && j==6) {    // 添加初始方块
+				var square = document.createElement('div');
+				square.setAttribute('id','square');
+				square.className = 'bottom';
+				td.appendChild(square);
+			}
+			tr.appendChild(td);
+		}
+		tbody.appendChild(tr);
+	}
+	table.appendChild(tbody);
+	container.appendChild(table);
+})();
+
+// 操作小方块
+// 面向对象的工厂模式
+// prototype 属性使您有能力向对象添加属性和方法。
+function Manipulate(square){
+	this.square = square;
+};
+Manipulate.prototype = {
+	go:function(){
+		console.log('gogogo');
+		var direction = square.className;
+		var td = this.square.parentNode;
+		switch(direction){
+			case 'right':
+				var target = td.nextElementSibling;
+				if (target) {
+					target.appendChild(this.square);
+					td.innerHTML = '';
+				} else {
+					alert('到达最右侧了');
+				}
+				break;
+			case 'left':
+				var target = td.previousElementSibling;
+				if (target && (target.innerHTML == '')) {
+					target.appendChild(this.square);
+					td.innerHTML = '';
+				} else {
+					alert('到达最左侧了');
+				}
+				break;
+			case 'bottom':
+				var index = td.getAttribute('index');
+				var tr = td.parentNode.nextElementSibling;
+				if (tr) {
+					var target = tr.children[index];
+					target.appendChild(this.square);
+					td.innerHTML = '';
+				} else {
+					alert('到达最底部了');
+				}
+				break;
+			case 'top':
+				var index = td.getAttribute('index');
+				var tr = td.parentNode.previousElementSibling;
+				if (tr &&(tr.getAttribute('axle')!='y')) {
+					var target = tr.children[index];
+					target.appendChild(this.square);
+					td.innerHTML = '';
+				} else {
+					alert('到达顶部了');
+				}
+				break;
+		}
+	},
+	turn:function(direction){
+		switch(direction){
+			case 'top':
+				this.square.className = "top";
+				break;
+			case 'right':
+				this.square.className = "right";
+				break;
+			case 'bottom':
+				this.square.className = "bottom";
+				break;
+			case 'left':
+				this.square.className = "left";
+				break;
+		}
+	}
+}
+
+// 创建对象，绑定相关事件即可
+var square = $("#square");
+var manipulate = new Manipulate(square);
+
+addHandler(document,'keydown',function(e){
+	console.log(e.keyCode);
+	switch(e.keyCode){
+		case 37:
+			manipulate.turn("left");
+			break;
+		case 38:
+			manipulate.turn("top");
+			break;
+		case 39:
+			manipulate.turn("right");
+			break;
+		case 40:
+			manipulate.turn("bottom");
+			break;
+		case 32:
+		case 13:
+			manipulate.go();
+			break;
+	}
+});
+
+</script>
+
+</body>
+</html>

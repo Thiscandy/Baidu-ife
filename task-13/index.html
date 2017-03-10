@@ -34,10 +34,76 @@
       #as{
         position: absolute;
         width: 51px;
-        height: 30px;
+        height: 35px;
         background: red;
-        border-top: 20px solid blue;
+        border-top: 15px solid blue;
         transition: all 0.2s;
+      }
+
+      .left{
+        transform: rotate(-90deg);
+      }
+      .right{
+        transform: rotate(90deg);
+      }
+      .top{
+        transform: rotate(0deg);
+      }
+      .bottom{
+        transform: rotate(180deg);
+      }
+
+      .text-con {
+        width:600px;
+        margin: 50px auto 0 auto;
+        font-size: 32px;
+      }
+      .text-con>span {
+        line-height: 60px;
+      }
+      .bnt {
+        z-index: 999;
+        -webkit-transition: all 0.3s;
+        float:right;
+        width: 140px;
+        height: 60px;
+        line-height: 60px;
+        border-radius: 8px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 32px;
+        background: #2E78B9;
+        color: #fff;
+        cursor: pointer;
+      }
+      .bnt:hover {
+        box-shadow: 0 0 10px 2px #ccc;
+      }
+      #texts {
+        z-index: 1;
+        display: inline-block;
+        position: absolute;
+      }
+      #texts p {
+        padding-top: 5px;
+        padding-left: 10px;
+        font-size: 24px;
+        color: #B2B2B2;
+      }
+      .text {
+        -webkit-transition: all 0.3s;
+        width: 320px;
+        height: 60px;
+        padding-left: 10px;
+        margin-left: 10px;
+        margin-right: 10px;
+        border-radius: 8px;
+        font-size: 32px;
+        border: 1px solid #ccc;
+        outline:none;
+      }
+      .text:focus {
+        box-shadow: 0 0 10px #ccc;
       }
   	</style>
   </head>
@@ -71,7 +137,6 @@
         <div>9</div>
         <div>10</div></li>
       <div class="content">
-        <div id="as"></div>
         <div class="across"></div>
         <div class="across"></div>
         <div class="across"></div>
@@ -112,6 +177,82 @@
     }
   }
 
+  var block = {
+    state:{
+      x:5,            // 默认x轴 5 ;
+      y:5,            // 默认y轴 5 ;
+      dir:'top',   // 方块的默认向上;
+      element:null    // element
+    },
+    add:function(){
+      if (block.state.element) {
+        return;
+      }
+      var element = a[block.state.x][block.state.y].node;
+      var iblock = document.createElement("div");
+      iblock.id = "as";
+      iblock.className = block.state.dir;
+      element.appendChild(iblock);
+      block.state.element = iblock;
+    },
+    // 动作
+    action:function(dir){
+      if(block.state.dir == dir){
+        if(dir == "left" || dir == "right"){
+          if(dir == "left"){
+            if(block.state.y <= 0){
+              alert('到最左边了');
+              return;
+            }else{
+              block.state.y--;
+              block.move();
+            }
+          }else{
+            if(block.state.y >= 9){
+              alert('到最右边了')
+              return;
+            }else{
+              block.state.y++;
+              block.move();
+            }
+          }
+          console.log(block.state.y)
+        }else{
+          if(dir == "top"){
+            if(block.state.x <= 0){
+              alert('到最上面了');
+              return;
+            }else{
+              block.state.x --;
+              block.move();
+            }
+          }else{
+            if(block.state.x >= 9){
+              alert('到最下面了');
+              return;
+            }else{
+              block.state.x ++;
+              block.move();
+            }
+          }
+          console.log(block.state.x)
+        }
+      }else{
+        block.state.dir = dir;
+        block.state.element.className = block.state.dir;
+        console.log(block.state.dir)
+      }
+    },
+    // 移动节点
+    move:function(){
+      if (!block.state.element) {
+        return;
+      }
+      var element = a[block.state.x][block.state.y].node;
+      element.insertBefore(block.state.element,element.childNodes[0]);
+    }
+  }
+
   function cc(){
     var across = document.getElementsByClassName('across');
     var content = document.getElementsByClassName('content')[0];
@@ -123,8 +264,47 @@
     }
   }
 
-  window.onload =function(){
+  function move(){
+    var bnt = document.getElementsByTagName('input')[1];
+    document.onkeydown = function(){
+      var e = event || window.event ;
+      // 按w键或者上键
+      if(e && e.keyCode == 87 || e && e.keyCode == 38){
+        block.action("top");
+      // 按s键或者下键
+      }else if(e && e.keyCode == 83 || e && e.keyCode == 40){
+        block.action("bottom");
+      // 按a键或者左键
+      }else if(e && e.keyCode == 65 || e && e.keyCode == 37){
+        block.action("left");
+      // 按d键或者右键
+      }else if(e && e.keyCode == 68 || e && e.keyCode == 39){
+        block.action("right");
+      }
+    }
+    bnt.onclick = function(){
+      var value = document.getElementsByTagName('input')[0];
+      switch (value){
+        case "up":
+          block.action("top");
+          break;
+        case "down":
+          block.action("bottom");
+          break;
+        case "left":
+          block.action("left");
+          break;
+        case "right":
+          block.action("right");
+          break;
+      }
+    }
+  }
+
+  window.onload = function(){
     cc();
+    block.add();
+    move();
   }
 
 </script>

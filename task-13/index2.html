@@ -76,12 +76,13 @@ function Manipulate(square){
 };
 Manipulate.prototype = {
 	go:function(){
-		console.log('gogogo');
+		// console.log('gogogo');
 		var direction = square.className;
 		var td = this.square.parentNode;
 		switch(direction){
 			case 'right':
 				var target = td.nextElementSibling;
+				console.dir(target);
 				if (target) {
 					target.appendChild(this.square);
 					td.innerHTML = '';
@@ -145,7 +146,7 @@ var square = $("#square");
 var manipulate = new Manipulate(square);
 
 addHandler(document,'keydown',function(e){
-	console.log(e.keyCode);
+	// console.log(e.keyCode);
 	switch(e.keyCode){
 		case 37:
 			manipulate.turn("left");

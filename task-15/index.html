@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>UI组件之浮出层</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../favicon.ico" rel="icon" type="image/x-icon" />
+     <style>
+    	* {
+    	    padding: 0;
+    	    margin: 0;
+    	    font-family: "Microsoft YaHei UI", sans-serif;
+    	    -webkit-user-select: none;
+    	    -moz-user-select: none;
+    	    -ms-user-select: none;
+    	    user-select: none;
+    	}
+    	html, body {
+    	    height: 100%;
+    	    width: 100%;
+    	}
+    	header.logo {
+    	    width: 100%;
+    	    height: 500px;
+    	    display: flex;
+    	    flex-direction: column;
+    	    justify-content: center;
+    	    align-items: center;
+    	}
+    	header img {
+    	    display: block;
+    	    width: 200px;
+    	    height: 200px;
+    	    border: 10px solid #ccc;
+    	    -webkit-border-radius: 50%;
+    	    -moz-border-radius: 50%;
+    	    -o-border-radius: 50%;
+    	    border-radius: 50%;
+    	    -webkit-transition: all .5s ease;
+    	    -moz-transition: all .5s ease;
+    	    -o-transition: all .5s ease;
+    	    transition: all .5s ease;
+    	}
+    	header img:hover {
+    	    -webkit-transform: scale(1.2);
+    	    -moz-transform: scale(1.2);
+    	    -o-transform: scale(1.2);
+    	    transform: scale(1.2);
+    	}
+    	header h1 {
+    	    margin: 25px 0;
+    	}
+    	section.btn {
+    	    text-align: center;
+    	}
+    	input[type="button"] {
+    	    padding: 8px 15px;
+    	    background: white;
+    	    border: none;
+    	    outline: none;
+    	    height: 40px;
+    	    margin: 5px 10px 10px 0px;
+    	    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    	    -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    	    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    	    -webkit-transition: all .5s ease;
+    	    -moz-transition: all .5s ease;
+    	    -o-transition: all .5s ease;
+    	    transition: all .5s ease;
+    	}
+    	input[type="button"]:hover {
+    	    background: #20c5ff;
+    	    color: white;
+    	    cursor:pointer;
+    	}
+		
+		.pop {
+			position: fixed;
+			display: none;
+			left: 0;
+			top: 0;
+			height: 100%;
+			width: 100%;
+			background: rgba(0, 0, 0, 0.6);
+		}
+		.show {
+			display: block;
+		}
+		.pop-k {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			min-width: 300px;
+			min-height: 200px;
+			background-color: #fff;
+			border-radius: 5px;
+		}
+		.pop-k header {
+			background-color: #20c5ff;
+			padding: 10px;
+			overflow: hidden;
+			border-radius: 5px 5px 0 0;
+		}
+		.pop-k header a {
+			float: right;
+			font-size: 20px;
+			font-weight: bold;
+			color: block;
+			text-decoration: none;
+			transition: all .5s ease;
+		}
+		.pop-k header a:hover {
+			color: #fff;
+			cursor:pointer;
+		}
+		.pop-k header h3 {
+			float: left;
+			margin: 0;
+			font-size: 20px;
+			font-weight: bold;
+		}
+		.pop-k article {
+			padding: 10px;
+		}
+		.pop-k footer {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			text-align: right;
+		}
+    </style>
+  </head>
+<body>
+	
+	<header class="logo">
+		<img src="../avatar.jpg" alt="Ori">
+		<h1>任务六：UI组件之浮出层</h1>
+	</header>
+	<section class="btn">
+		<input type="button" value="点击我" id="btn">
+	</section>
+
+	<!-- <section class="pop-up show">
+		<section class="pop-wrap">
+			<header class="pop-header">
+				<h3>这里是个标题</h3>
+				<a href="javascrip:;" class="close">x</a>
+			</header>
+			<article class="pop-content">
+				<p>这里是内容</p>
+			</article>
+			<footer class="pop-control">
+				<input type="button" value="确定" class="confirm">
+				<input type="button" value="取消" class="cancel">
+			</footer>
+		</section>
+	</section> -->
+
+	<!-- <div class="pop">
+		<section class="pop-k">
+			<header>
+				<h3>这里是个真标题</h3>
+				<a>x</a>
+			</header>
+			<article>
+				<p>这是是个真内容</p>
+			</article>
+			<footer>
+				<input type="button" value="确定">
+				<input type="button" value="取消">
+			</footer>
+		</section>
+	</div> -->
+
+
+<script>
+
+	var pop = function(obj){
+		this.parent   = obj.parent;		// 创建的地方
+		this.title    = obj.title;		// 标题
+		this.content  = obj.content;	// 内容
+		this.state    = obj.state;		// 状态
+		this.drag     = obj.drag;       // 是否拖动
+		this.define   = obj.define;
+		this.cancel   = obj.cancel;
+		this.element  = obj.element;
+		this.init();
+	}
+	pop.prototype = {
+		init:function(){
+			/*if (!this.drag) {
+				this.drag = true;
+			}*/
+			this.add();
+			// this.drags();
+		},
+		// 输出HTML
+		add:function(){
+			var body = document.getElementsByTagName('body')[0],
+				div  = document.createElement('div');
+			div.className = 'pop';
+			div.innerHTML +=
+			div.innerHTML += "<section class='pop-k'>"
+						  + "	<header>"
+						  + "		<h3>"+this.title+"</h3>"
+						  + "		<a>x</a>"
+						  + "	</header>"
+						  + "	<article>"
+						  + "		<p>"+this.content+"</p>"
+						  + "	</article>"
+						  + "	<footer>"
+						  + "		<input type='button' value='确定'>"
+						  + "		<input type='button' value='取消'>"
+						  + "	</footer>"
+						  + "</section>";
+			body.appendChild(div);
+			this.element = div;
+		},
+	/*		// 拖动
+		drags:function(){
+			var bnt = false,
+				xy  = [],
+				me  = this.element.getElementByClassName('pop-k')[0];
+			me.addEventListener('mousedown',function(e){
+				bnt = true;
+				xy  = [e.clientX - me.offsetLeft,e.clientY - me.offsetTop];
+				if (bnt) {
+					me.onmousemove = function(e) {
+						if (!bnt) {
+							return;
+						} else {
+							me.style.cursor = 'move';
+							me.style.top    = e.clientY - xy[1] + 'px';
+							me.style.marginTop = 0;
+							me.style.left =e.clientX - xy[0] + 'px';
+							me.style.marginLeft = 0;
+						}
+					}
+					me.onmouseup = function(){
+						bnt = false;
+						me.style.cursor = 'default';
+						me.onmousemove =null;
+					}
+				}
+			});
+	},*/
+		// 显示
+		on:function(){
+			this.element.className += " show";
+		},
+		// 隐藏
+		remove:function(){
+			this.element.className = this.element.replace(/show/g,"").trim();
+		}
+
+	}
+
+	window.onload = function(){
+		var button = document.getElementsByTagName('input')[0];
+		var pops = new pop({
+			title:'halo 啊？',
+			content:'halo 这是个真内容'
+		});
+		button.onclick = function(){
+			pops.on();
+		};
+	}
+
+</script>
+
+</body>
+</html>

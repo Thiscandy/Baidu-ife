@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>听指令的小方块（二）</title>
+    <link href="../favicon.ico" rel="icon" type="image/x-icon" />
+    <style>
+      #container {
+        margin: 10px auto;
+        position: relative;
+        width: 441px;
+        height: 441px;
+      }
+      #square {
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        background: linear-gradient(red 20%,blue 0);
+        background-size: 100%;
+        transition-duration: 0.5s;
+      }
+      #control_panel {
+        margin: auto;
+        width: 400px;
+        text-align: center;
+      }
+      input {
+        border: 1px solid #888;
+        background-color: #fff;
+        border-radius: 5px;
+        padding:5px 10px;
+        color: #000;
+        width:240px;
+        height: 40px;
+        font-size: 24px;
+        margin-left: -14px;
+      }
+      input[type=button] { 
+        width:70px;
+        height:50px;
+        border: 1px solid #aaa;
+        color: #fff;
+        background: #428bca;
+        margin: 0 0 0 10px;
+      }
+      input[type=button]:hover {
+        cursor:pointer;
+        background: #5bc0de;
+      }
+    </style>
+    <script>
+      // querySelector() 方法返回文档中匹配指定 CSS 选择器的一个元素。
+      var $ = function(sel){
+        return document.querySelector(sel);
+      }
+      function addHandler(ele,type,handler){
+        if(ele.addEventListener){
+          ele.addEventListener(type,handler,false);
+        }else if(ele.attachEvent){
+          ele.attachEvent("on" + type,handler);
+        }else{
+          ele["on" + type] = handler;
+        }
+      }
+    </script>
+  </head>
+<body>
+
+  <div id="container">
+    <canvas id="canvas_bg" width="441" height="441"></canvas>
+    <div id="square"></div>
+  </div>
+  <div id="control_panel">
+    <input type="text" id="order">
+    <input type="button" id="btn_exe" value="执行">
+  </div>
+
+
+
+<script>
+  /*
+    getContext() 方法返回一个用于在画布上绘图的环境
+
+    canvas strokeStyle 属性设置或返回用于笔触的颜色、渐变或模式
+
+    translate() 方法转换画布的用户坐标系统
+
+    canvas lineWidth 属性设置或返回当前线条的宽度，以像素计
+
+    beginPath() 方法在一个画布中开始子路径的一个新的集合
+
+    moveTo() 方法可把窗口的左上角移动到一个指定的坐标
+
+    canvas lineTo() 方法添加一个新点，然后创建从该点到画布中最后指定点的线条（该方法并不会创建线条）
+
+    canvas stroke() 方法会实际地绘制出通过 moveTo() 和 lineTo() 方法定义的路径。默认颜色是黑色
+
+    canvas closePath() 方法创建从当前点到开始点的路径
+
+    font 属性在一个声明中设置所有字体属性
+
+    textAlign 属性对齐元素中的文本
+
+    canvas textBaseline  属性设置或返回在绘制文本时的当前文本基线 middle 文本基线是 em 方框的正中。
+
+    canvas fillText() 方法在画布上绘制填色的文本。文本的默认颜色是黑色
+*/
+
+  (function(){
+    var drawing = $('#canvas_bg');              // 获取表格id
+    console.dir(drawing.getContext);
+    if (drawing.getContext) {
+      var context = drawing.getContext('2d');   // 用2d场景
+      creataBg(context);                        // 创建棋盘背景
+      createXY(context);                        // 创建坐标值
+    }
+
+    function creataBg(context) {
+      context.strokeStyle = '#ccc';
+      context.translate(0.5,0.5);
+      context.lineWidth = 1;
+      context.beginPath();
+      var x = 40,y = 40;
+      for (var i=0; i<11; i++) {
+        context.moveTo(x,y);
+        context.lineTo(x,440);
+        x +=40;
+      }
+      x = 40; y = 40;
+      for (var j=0; j<11; j++){
+        context.moveTo(x,y);
+        context.lineTo(440,y);
+        y +=40;
+      }
+      context.stroke();
+      context.closePath();
+    }
+
+    function createXY(context){
+        context.font = "normal 14px Arial";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        var x = 60,y=60;
+        for(var i=1;i<11;i++){
+            context.fillText(i,x,20);
+            x += 40;
+        }
+        for(var i=1;i<11;i++){
+            context.fillText(i,20,y);
+            y += 40;
+        }   
+    }
+  })();
+
+
+  /*
+    split() 方法用于把一个字符串分割成字符串数组
+*/
+
+  function Square(square){
+    this.square = square;
+    this.left = 200;      // 初始X位置
+    this.top = 200;       // 初始Y位置
+    this.deg = 0;         // 初始旋转角度
+  }
+  Square.prototype = {
+      init : function(){
+          this.setPositon();
+      },
+      setPositon : function(){
+          this.square.style.left = this.left+"px";
+          this.square.style.top  = this.top +"px";
+          this.square.style.transform = "rotate("+this.deg+"deg)";
+      },
+      move : function(commond){
+          var preCommond = commond.split(" ")[0];
+          var direction = commond.split(" ")[1];
+          switch(preCommond){
+              case 'TUN':
+                  rotate(direction,this);
+                  break;
+              case 'GO':
+                  go(this);
+                  break;
+              case 'MOV':
+                  moveTurn(direction,this);
+                  break;
+              case 'TRA':
+                  trans(direction,this);
+          }
+          this.setPositon();  // 执行位置变换
+          function rotate(direction,that){
+              switch(direction){
+                case 'LEF':that.deg -= 90;break;
+                case 'RIG':that.deg += 90;break;
+                case 'BAC':that.deg += 180;break;
+              }
+          }
+          function moveTurn(direction,that){
+              switch(direction){
+                case 'LEF':that.deg = -90;break;
+                case 'RIG':that.deg = 90;break;
+                case 'TOP':that.deg = 0;break;
+                case 'BOT':that.deg = 180;break;
+              }
+              go(that);
+          }
+          function trans(direction,that){
+              switch(direction){
+                  case 'LEF':
+                    if (that.left>40) {
+                      that.left -=40;
+                    } else {
+                      alert('到达左侧');
+                    }
+                    break;
+                  case 'RIG':
+                    if (that.left<400) {
+                      that.left +=40;
+                    } else {
+                      alert('到达右侧');
+                    }
+                    break;
+                  case 'TOP':
+                    if (that.top>40) {
+                      that.top -=40;
+                    } else {
+                      alert('到达顶部');
+                    }
+                    break;
+                  case 'BOT':
+                    if (that.top<400) {
+                      that.top +=40;
+                    } else {
+                      alert('到达顶部');
+                    }
+                    break;
+              }
+          }
+          function go(that) {
+              var deg = that.deg % 360;
+              switch(deg){
+                  case 0:
+                    if (that.top>40) {
+                      that.top -=40;
+                    } else {
+                      alert('到达顶部');
+                    }
+                    break;
+                  case 180:
+                  case -180:
+                      if(that.top<400){
+                          that.top +=40;
+                      }else{
+                          alert("到达底部");
+                      }
+                      break;
+                  case 90:
+                  case -270:
+                      if(that.left<400){
+                          that.left +=40;
+                      }else{
+                          alert("到达右侧");
+                      }
+                      break;
+                  case -90:
+                  case 270:
+                      if(that.left>40){
+                          that.left -=40;
+                      }else{
+                          alert("到达左侧");
+                      }
+                      break;
+              }
+          }
+      }
+  }
+
+  /*
+    toUpperCase() 方法用于把字符串转换为大写
+
+    .trim() 去掉字符串首尾空格
+*/
+
+  var square = new Square($('#square'));
+  square.init();  // 执行初始位置
+
+  addHandler($('#btn_exe'),'click',function(e){
+      var value = $('#order').value.toUpperCase();
+      var order = value.trim();
+      square.move(order);
+  });
+  addHandler(document,'keydown',function(e){
+      switch(e.keyCode){
+          case 37:
+            square.move('MOV LEF');
+            break;
+          case 38:
+            square.move('MOV TOP');
+            break;
+          case 39:
+            square.move('MOV RIG');
+            break;
+          case 40:
+            square.move('MOV BOT');
+            break;
+          case 32:
+          case 13:
+            square.move('GO');
+            break;
+      }
+  });
+</script>
+</body>
+</html>

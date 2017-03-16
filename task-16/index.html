@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>UI组件之排序表格</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../favicon.ico" rel="icon" type="image/x-icon" />
+    <style>
+    	* {
+    	    padding: 0;
+    	    margin: 0;
+    	    font-family: "Microsoft YaHei UI", sans-serif;
+    	    -webkit-user-select: none;
+    	    -moz-user-select: none;
+    	    -ms-user-select: none;
+    	    user-select: none;
+    	}
+    	header h1 {
+    	    text-align: center;
+    	    height: 100px;
+    	    line-height: 100px;
+    	}
+
+    	.sort-table {
+    	    width: 1024px;
+    	    text-align: center;
+    	    font-size: 18px;
+    	    border-collapse: collapse;
+    	    margin: 0 auto;
+    	}
+    	.sort-table tr {
+    	    line-height: 34px;
+    	}
+    	.sort-table tr:first-child {
+    	    color: #FFFFFF;
+    	    background: #aaa;
+    	    line-height: 44px;
+    	}
+    	.sort-table th {
+    	    width: 230px;
+    	    position: relative;
+    	}
+    	.sort-table th:hover {
+    	    background: #000;
+    	    cursor: pointer;
+    	}
+    	.sort-table td, .sort-table th {
+    	    border: 1px solid black;
+    	    -webkit-transition: all .3s ease;
+    	    -moz-transition: all .3s ease;
+    	    -o-transition: all .3s ease;
+    	    transition: all .3s ease;
+    	}
+    	.sort-table td:hover {
+    	    background: #20c5ff;
+    	    color: white;
+    	    cursor: pointer;
+    	}
+    	.sort-table .icon {
+    	    position: absolute;
+    	    top: 10px;
+    	    width: 24px;
+    	    height:24px;
+    	    line-height: 24px;
+    	    -webkit-transition: all .3s ease;
+    	    -moz-transition: all .3s ease;
+    	    -o-transition: all .3s ease;
+    	    transition: all .3s ease;
+    	}
+    	.icon:hover {
+    	    -webkit-transform: scale(1.4);
+    	    -moz-transform: scale(1.4);
+    	    -o-transform: scale(1.4);
+    	    -ms-transform: scale(1.4);
+    	    transform: scale(1.4);
+    	    -webkit-transition: all .3s ease;
+    	    -moz-transition: all .3s ease;
+    	    -o-transition: all .3s ease;
+    	    transition: all .3s ease;
+    	    cursor: pointer;
+    	}
+    	.icon.icon-asc {
+    	    right: 30px;
+    	}
+    	.icon.icon-desc {
+    	    right: 10px;
+    	}
+    </style>
+  </head>
+<body>
+	
+	<header>
+		<h1>
+			任务七：UI组件之排序表格
+		</h1>
+	</header>
+	<div id="data"></div>
+<!-- 
+	<table class="sort-table">
+		<tbody>
+			<tr>
+				<th>
+					<p>Name</p>
+				</th>
+				<th>
+					<p>语文</p>
+					<span class="icon icon-asc"  data-index='1'>↑</span>
+					<span class="icon icon-desc" data-index='1'>↓</span>
+				</th>
+				<th>
+					<p>数学</p>
+					<span class="icon icon-asc"  data-index='1'>↑</span>
+					<span class="icon icon-desc" data-index='1'>↓</span>
+				</th>
+				<th>
+					<p>英语</p>
+					<span class="icon icon-asc"  data-index='1'>↑</span>
+					<span class="icon icon-desc" data-index='1'>↓</span>
+				</th>
+				<th>
+					<p>总分</p>
+					<span class="icon icon-asc"  data-index='1'>↑</span>
+					<span class="icon icon-desc" data-index='1'>↓</span>
+				</th>
+			</tr>
+			<tr>
+				<td>Jack</td>
+				<td>60</td>
+				<td>60</td>
+				<td>60</td>
+				<td>180</td>
+			</tr>
+			<tr>
+				<td>Tom</td>
+				<td>60</td>
+				<td>60</td>
+				<td>60</td>
+				<td>180</td>
+			</tr>
+		</tbody>
+	</table>
+ -->
+
+<script>
+	function datagrid(obj){
+		return new datagrid.prototype.init(obj);
+	}
+	datagrid.prototype = {
+		init:function(obj){
+			this.title = obj.title;
+			this.isSortable = obj.isSortable;
+			this.msg = obj.msg;
+			this.add();			// 添加表单
+			// this.action(obj);
+			// this.sc(obj);
+		},
+
+		add:function(){
+			var table = document.createElement('table'),
+				tr    = document.createElement('tr');
+			table.className = 'sort-table';
+			// 添加表头
+			for (var i=0;i<this.title.length;i++){
+				if (this.isSortable[i] == true) {
+					tr.innerHTML += "<th><p>"+ this.title[i] + "</p>"
+						+ "    <span class="icon icon-asc"  data-index='1'>↑</span>"
+						+ "    <span class="icon icon-desc" data-index='1'>↓</span>"
+						+ "</th>"
+				} else {
+					tr.innerHTML += '<th><p>'+this.title[i]+'</p></th>';
+				}
+			}
+			table.appendChild(tr);
+			// 添加内容
+			/*for (var j=0; j<this.data.tbody.length; j++){
+				var tr = document.createElement('tr');
+				tr.setAttribute('');
+			}*/
+		}
+	}
+
+	window.onload = function(){
+		var tables = datagrid({
+			title:['Name','语文','数学','英语','总分'],
+			isSortable:[false,true,true,true,true],
+			msg:[
+				["Jack", "80", "90", "78", "248"],
+				["Tom", "89", "67", "100", "256"],
+				["Rowling", "100", "88", "77", "265"],
+				["Lucy", "57", "84", "63", "204"],
+				["Jenny", "48", "94", "75", "217"]
+			]
+		});
+	}
+</script>
+</body>
+</html>

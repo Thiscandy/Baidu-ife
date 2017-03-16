@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>UI组件之排序表格</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../favicon.ico" rel="icon" type="image/x-icon" />
+    <style>
+    	* {
+    	    padding: 0;
+    	    margin: 0;
+    	    font-family: "Microsoft YaHei UI", sans-serif;
+    	    -webkit-user-select: none;
+    	    -moz-user-select: none;
+    	    -ms-user-select: none;
+    	    user-select: none;
+    	}
+    	header h1 {
+    	    text-align: center;
+    	    height: 100px;
+    	    line-height: 100px;
+    	}
+		.tables tr{
+		    marign: 0;
+		    padding: 0;
+		}
+		#box {
+		    width: 500px;
+		    margin: 0 auto;
+		}
+		.tables {
+		    border-collapse: collapse;
+		    text-align: center;
+		}
+		.tables td{
+		    width: 200px;
+		    border: 1px solid #000;
+		    padding: 5px;
+		}
+		.tables tr:first-child td{
+		    width: 200px;
+		    background: #ccc;
+		}
+		.tables .sort-bnt {
+		    margin-top: -4px;
+		    position: absolute;
+		    margin-left: 15px;
+		    display: inline-block;
+		}
+		.sort-bnt div {
+		    width: 0;
+		    height: 0;
+		    cursor: pointer;
+		    border-left: 5px solid transparent;
+		    border-right: 5px solid transparent;
+		}
+		.sort-bnt div.top{
+		    margin-bottom: 5px;
+		    border-bottom: 10px solid black;
+		}
+		.sort-bnt div.bottom{
+		    border-top: 10px solid black;
+		}
+		.fixed {
+		    width: 501px;
+		    position: fixed;
+		    top: 0;
+		}
+    </style>
+  </head>
+<body>
+
+	<header>
+		<h1>
+			任务七：UI组件之排序表格
+		</h1>
+	</header>
+	<div id="box"></div>
+
+<script>
+	var table = function(obj){
+	    this.element = obj.element;
+	    this.data = obj.data;
+	    this.parent = obj.parent;
+
+	    this.init();
+	}
+	table.prototype = {
+	    init:function(){
+	        this.add();
+	        this.action();
+	        this.sc();
+	    },
+	    // 添加表单
+	    add:function(){
+	        var table = document.createElement("table");
+	        var header = document.createElement("tr");
+	        table.className = "tables";
+	        // 添加表头
+	        for(var i=0;i<this.data.header.length;i++){
+	            if(this.data.me[i] == 1){
+	                header.innerHTML += "<td>"
+	                    +         this.data.header[i]
+	                    +    "    <span class='sort-bnt' data-id="+i+">"
+	                    +    "        <div class='top'></div>"
+	                    +    "        <div class='bottom'></div>"
+	                    +    "    </span>"
+	                    +    "</td>";
+	            }else{
+	                header.innerHTML += "<td>"+ this.data.header[i] +"</td>";
+	            }
+	        }
+	        table.appendChild(header);
+	        // 添加表单本身
+	        for(var j=0;j<this.data.tbody.length;j++){
+	            var tr = document.createElement("tr");
+	            tr.setAttribute("data-id",j);
+	            for(var z=0;z<this.data.tbody[j].length;z++){
+	                tr.innerHTML += "<td class=s>"+this.data.tbody[j][z]+"</td>"
+	            }
+	            table.appendChild(tr);
+	        }
+	        this.parent.appendChild(table);
+	        this.element = table;
+	    },
+	    eles:function(){
+	        var el = this.element;
+	        this.parent.innerHTML = "";
+	        this.add();
+	        this.action();
+	    },
+	    //  排序结果
+	    small:function(line){
+	        for(var i=0;i<this.data.tbody.length;i++){
+	            for(var j=0;j<this.data.tbody.length-i-1;j++){
+	                if(this.data.tbody[j][line]>this.data.tbody[j+1][line]){
+	                    var s = this.data.tbody[j];
+	                    this.data.tbody[j] = this.data.tbody[j+1];
+	                    this.data.tbody[j+1] = s;
+	                }
+	            }
+	        }
+	        this.eles()
+	    },
+	    big:function(line){
+	        for(var i=0;i<this.data.tbody.length;i++){
+	            for(var j=0;j<this.data.tbody.length-i-1;j++){
+	                if(this.data.tbody[j][line]<this.data.tbody[j+1][line]){
+	                    var s = this.data.tbody[j];
+	                    this.data.tbody[j] = this.data.tbody[j+1];
+	                    this.data.tbody[j+1] = s;
+	                }
+	            }
+	        }
+	        this.eles()
+	    },
+	    action:function(){
+	        var that = this;
+	        this.element.addEventListener("click",function(e){
+	            var ev = ev || window.event;
+	            var target = ev.target || ev.srcElement;
+	            if(target.nodeName == "DIV"){
+	                if(target.className == "top"){
+	                    that.small(target.parentNode.attributes["data-id"].nodeValue);
+	                }else if(target.className == "bottom"){
+	                    that.big(target.parentNode.attributes["data-id"].nodeValue);
+	                }
+	            }
+	        });
+	    },
+	    sc:function(){
+	        var elTop = this.element.offsetTop;
+	        var elBo = elTop + this.element.offsetHeight;
+	        var that = this;
+	        window.onscroll = function(){
+	            var t = document.documentElement.scrollTop || document.body.scrollTop;
+	            if(t>=elTop && t<= elBo){
+	                that.element.firstChild.className = "fixed";
+	            }else{
+	                that.element.firstChild.className = "";
+	                return
+	            }
+	        }
+	    }
+	}
+
+
+	var a = new table({
+	    parent:document.getElementById("box"),
+	    data:{
+	        me      :["0","1","1","1"],
+	        header:["名字","数学","语文","英语"],
+	        tbody  :[
+	            ["小明","88","15","47"],
+	            ["小花","56","40","60"],
+	            ["小李","75","59","45"],
+	        ],
+	    }
+	});
+</script>
+</body>
+</html>

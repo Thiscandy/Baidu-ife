@@ -142,59 +142,43 @@
 		<input type="button" value="点击我" id="btn">
 	</section>
 
-	<!-- <section class="pop-up show">
-		<section class="pop-wrap">
-			<header class="pop-header">
-				<h3>这里是个标题</h3>
-				<a href="javascrip:;" class="close">x</a>
-			</header>
-			<article class="pop-content">
-				<p>这里是内容</p>
-			</article>
-			<footer class="pop-control">
-				<input type="button" value="确定" class="confirm">
-				<input type="button" value="取消" class="cancel">
-			</footer>
-		</section>
-	</section> -->
-
-	<!-- <div class="pop">
-		<section class="pop-k">
-			<header>
-				<h3>这里是个真标题</h3>
-				<a>x</a>
-			</header>
-			<article>
-				<p>这是是个真内容</p>
-			</article>
-			<footer>
-				<input type="button" value="确定">
-				<input type="button" value="取消">
-			</footer>
-		</section>
-	</div> -->
-
-
 <script>
-
+	// 封装的浮动层
 	var pop = function(obj){
-		this.parent   = obj.parent;		// 创建的地方
 		this.title    = obj.title;		// 标题
 		this.content  = obj.content;	// 内容
-		this.state    = obj.state;		// 状态
 		this.drag     = obj.drag;       // 是否拖动
-		this.define   = obj.define;
-		this.cancel   = obj.cancel;
-		this.element  = obj.element;
-		this.init();
+		this.width    = obj.width;		// 宽度
+		this.height   = obj.height;		// 高度
+		this.element  = obj.element;	// 指向弹出框
+		this.init(obj);					// 初始化
 	}
 	pop.prototype = {
-		init:function(){
-			/*if (!this.drag) {
+		init:function(obj){
+			if (!this.drag) {
 				this.drag = true;
-			}*/
+			}
 			this.add();
-			// this.drags();
+			this.drags();
+			this.wrap = this.element.querySelector('.pop-k');
+			this.wrap.style.width = this.width + 'px';
+			this.wrap.style.height = this.height + 'px';
+			this.wrap.style.marginLeft = -parseInt(getComputedStyle(this.wrap,false)['width'])/2 + 'px';
+			this.wrap.style.marginTop = -parseInt(getComputedStyle(this.wrap,false)['height'])/2 + 'px';
+			var that = this;
+
+			this.wrap.getElementsByTagName('a')[0].addEventListener('click',function(){
+				that.remove();
+			});
+			this.wrap.getElementsByTagName('input')[0].addEventListener('click',function(){
+				obj.update();
+				that.remove();
+			});
+			this.wrap.getElementsByTagName('input')[1].addEventListener('click',function(){
+				obj.del();
+				that.remove();
+			});
+
 		},
 		// 输出HTML
 		add:function(){
@@ -218,11 +202,11 @@
 			body.appendChild(div);
 			this.element = div;
 		},
-	/*		// 拖动
+		// 拖动
 		drags:function(){
 			var bnt = false,
 				xy  = [],
-				me  = this.element.getElementByClassName('pop-k')[0];
+				me  = this.element.querySelector('.pop-k');
 			me.addEventListener('mousedown',function(e){
 				bnt = true;
 				xy  = [e.clientX - me.offsetLeft,e.clientY - me.offsetTop];
@@ -245,25 +229,34 @@
 					}
 				}
 			});
-	},*/
+		},
 		// 显示
 		on:function(){
 			this.element.className += " show";
 		},
 		// 隐藏
 		remove:function(){
-			this.element.className = this.element.replace(/show/g,"").trim();
+			this.element.className = this.element.className.replace(/show/g,"").trim();
 		}
 
 	}
 
+	// 调用浮动层
 	window.onload = function(){
 		var button = document.getElementsByTagName('input')[0];
 		var pops = new pop({
-			title:'halo 啊？',
-			content:'halo 这是个真内容'
+			title:'halo 啊？',				// 标题
+			content:'halo 这是个真内容',	// 内容
+			width:360,						// 宽度
+			height:250,						// 高度
+			update: function(){				// 确定函数
+				console.log('确定了');
+			},
+			del: function(){				// 取消函数
+				console.log('取消了');
+			}
 		});
-		button.onclick = function(){
+		button.onclick = function(){		// 按钮点击打开
 			pops.on();
 		};
 	}

@@ -144,28 +144,38 @@
 
 <script>
 	function datagrid(obj){
-		return new datagrid.prototype.init(obj);
+		this.title = obj.title;
+		this.isSor = obj.isSor;
+		this.msg = obj.msg;
+		this.parent = obj.parent;
+		this.init();
 	}
 	datagrid.prototype = {
-		init:function(obj){
-			this.title = obj.title;
-			this.isSortable = obj.isSortable;
-			this.msg = obj.msg;
+		init: function(){
 			this.add();			// 添加表单
-			// this.action(obj);
-			// this.sc(obj);
+			// 循环给排序按钮添加事件
+			var table = document.querySelector('.sort-table'),
+				span = table.getElementsByTagName('span'),
+				that  = this;
+			for (var i = 0; i < span.length; i++) {
+				span[i].onclick = function(){
+					var type = /asc/.test(this.className) ? "asc" : "desc";
+					that.sort(this.dataset.index,type);		// 排序
+					that.update(table);						// 更新表格
+				}
+			}
 		},
 
-		add:function(){
+		add: function() {
 			var table = document.createElement('table'),
 				tr    = document.createElement('tr');
 			table.className = 'sort-table';
 			// 添加表头
 			for (var i=0;i<this.title.length;i++){
-				if (this.isSortable[i] == true) {
+				if (this.isSor[i] == true) {
 					tr.innerHTML += "<th><p>"+ this.title[i] + "</p>"
-						+ "    <span class="icon icon-asc"  data-index='1'>↑</span>"
-						+ "    <span class="icon icon-desc" data-index='1'>↓</span>"
+						+ "    <span class='icon icon-asc'  data-index="+i+">↑</span>"
+						+ "    <span class='icon icon-desc' data-index="+i+">↓</span>"
 						+ "</th>"
 				} else {
 					tr.innerHTML += '<th><p>'+this.title[i]+'</p></th>';
@@ -173,26 +183,55 @@
 			}
 			table.appendChild(tr);
 			// 添加内容
-			/*for (var j=0; j<this.data.tbody.length; j++){
+			for (var j=0; j<this.msg.length; j++){
 				var tr = document.createElement('tr');
-				tr.setAttribute('');
-			}*/
+				for (var z=0; z < this.msg[j].length; z++){
+					var td = document.createElement('td');
+					td.innerHTML = this.msg[j][z];
+					tr.appendChild(td);
+				}
+				table.appendChild(tr);
+			}
+			this.parent.appendChild(table);
+		},
+
+		// 排序
+		sort: function(int,type){
+			if (type === 'asc') {
+				this.msg.sort(function(a,b){
+					return b[int] - a[int];
+				});
+			} else {
+				this.msg.sort(function(a,b){
+					return a[int] - b[int];
+				});
+			}
+		},
+
+		// 更新表格
+		update: function(data){
+			var acc = data.getElementsByTagName('td'),
+				int = 0;
+			for (var i=0; i<this.msg.length; i++) {
+				for(var j=0; j<this.msg[i].length; j++){
+					acc[int++].innerHTML = this.msg[i][j];
+				}
+			}
 		}
 	}
 
-	window.onload = function(){
-		var tables = datagrid({
-			title:['Name','语文','数学','英语','总分'],
-			isSortable:[false,true,true,true,true],
-			msg:[
-				["Jack", "80", "90", "78", "248"],
-				["Tom", "89", "67", "100", "256"],
-				["Rowling", "100", "88", "77", "265"],
-				["Lucy", "57", "84", "63", "204"],
-				["Jenny", "48", "94", "75", "217"]
-			]
-		});
-	}
+	var tables = new datagrid({
+		parent 	:document.getElementById('data'),		// 在哪里生成表格
+		title	:['Name','语文','数学','英语','总分'],	// 表格标题
+		isSor	:[false,true,true,true,true],			// 是否可以排序
+		msg: [											// 表格数据
+			["Jack", "80", "90", "78", "248"],
+			["Tom", "89", "67", "100", "256"],
+			["Rowling", "100", "88", "77", "265"],
+			["Lucy", "57", "84", "63", "204"],
+			["Jenny", "48", "94", "75", "217"]
+		]
+	});
 </script>
 </body>
 </html>

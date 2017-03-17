@@ -144,33 +144,37 @@
 
 <script>
 	function datagrid(obj){
-		this.title = obj.title;
-		this.isSor = obj.isSor;
-		this.msg = obj.msg;
-		this.parent = obj.parent;
-		this.init();
+		this.title = obj.title;     // 标题
+		this.isSor = obj.isSor;     // 是否排序
+		this.msg = obj.msg;         // 表格数据
+		this.parent = obj.parent;   // 在哪里生成表格
+		this.init();                // 初始化生成表格
 	}
 	datagrid.prototype = {
 		init: function(){
-			this.add();			// 添加表单
+			// 添加表单
+			this.add();
 			// 循环给排序按钮添加事件
-			var table = document.querySelector('.sort-table'),
-				span = table.getElementsByTagName('span'),
-				that  = this;
+			var table = document.querySelector('.sort-table'),    // 指向表格的table
+				span = table.getElementsByTagName('span'),        // 指向表格里所有的span元素
+				that  = this;                                     // 让下面循环体可以调用本对象的属性
+			console.dir(that);
 			for (var i = 0; i < span.length; i++) {
 				span[i].onclick = function(){
-					var type = /asc/.test(this.className) ? "asc" : "desc";
-					that.sort(this.dataset.index,type);		// 排序
-					that.update(table);						// 更新表格
+					var type = /asc/.test(this.className) ? "asc" : "desc";   // asc（升序）desc（降序）如果class名字里有asc，那么type=asc，否则type=desc
+					that.sort(this.dataset.index,type);           // 排序
+					that.update(table);                           // 更新表格
 				}
 			}
 		},
 
 		add: function() {
+
+			// 声明表格 并加上样式class
 			var table = document.createElement('table'),
 				tr    = document.createElement('tr');
 			table.className = 'sort-table';
-			// 添加表头
+			// 添加表头 判断isSor里面是否可以排序
 			for (var i=0;i<this.title.length;i++){
 				if (this.isSor[i] == true) {
 					tr.innerHTML += "<th><p>"+ this.title[i] + "</p>"
@@ -195,7 +199,7 @@
 			this.parent.appendChild(table);
 		},
 
-		// 排序
+		// 大小排序
 		sort: function(int,type){
 			if (type === 'asc') {
 				this.msg.sort(function(a,b){
@@ -213,7 +217,9 @@
 			var acc = data.getElementsByTagName('td'),
 				int = 0;
 			for (var i=0; i<this.msg.length; i++) {
+
 				for(var j=0; j<this.msg[i].length; j++){
+					
 					acc[int++].innerHTML = this.msg[i][j];
 				}
 			}
